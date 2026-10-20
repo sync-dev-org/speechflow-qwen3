@@ -1,0 +1,159 @@
+{
+  "artifact": {
+    "build_metadata": {
+      "build_type": "Release",
+      "cmake_cuda_architectures": "86-real;89-real;120a-real",
+      "cpu_baseline": "x86-64-v3",
+      "cuda_toolkit_version": "13.3.73",
+      "ggml_revision": "c044c6f03892f9d5e98213b05f8afea1f8b0d3c9",
+      "qwentts_revision": "a8a7716b530e49fed537c57711247c12fbbb903c",
+      "schema_version": 1
+    },
+    "core_wheel": "speechflow-0.19.2-py3-none-any.whl",
+    "core_wheel_sha256": "2224905a292ed399d45466f504e681f22772f11aadeda060147b38eebbe20ca0",
+    "module_import_path": "lib/python3.12/site-packages/speechflow/qwen3/__init__.py",
+    "module_wheel": "speechflow_qwen3-0.6.2-py3-none-manylinux_2_38_x86_64.whl",
+    "module_wheel_sha256": "31096cb1fbe6c73642388f31d9921bca0ef286e18638014fd79d62f7ae4ff57c",
+    "release_tag": "v0.6.2",
+    "repository": "sync-dev-org/speechflow-qwen3"
+  },
+  "environment": {
+    "co_resident_gpu_note": "",
+    "cuda_architecture": "sm_120a",
+    "cuda_runtime": "13.3.29",
+    "glibc": "2.43",
+    "gpu_compute_capability": "12.0",
+    "gpu_count": 1,
+    "gpu_uuid": null,
+    "hardware": "NVIDIA RTX PRO 4000 Blackwell",
+    "nvidia_driver": "616.92",
+    "os": "Linux x86_64; Ubuntu 26.04 / WSL2",
+    "physical_gpu_index": 0,
+    "python_version": "3.12.14",
+    "qwentts_revision": "a8a7716b530e49fed537c57711247c12fbbb903c"
+  },
+  "evidence": {
+    "checks": {
+      "audio_contract": {
+        "detail": "get and every stream chunk were 24 kHz mono writable finite float32 in [-1, 1]",
+        "status": "pass"
+      },
+      "cancellation": {
+        "detail": "consumer early close reached native cancellation and no later chunk was yielded",
+        "status": "pass"
+      },
+      "close": {
+        "detail": "aclose completed twice without error",
+        "status": "pass"
+      },
+      "configuration_diagnostic": {
+        "detail": "invalid option identified by ConfigurationError: Qwen3 seed must be a bool-free integer",
+        "status": "pass"
+      },
+      "get_audio": {
+        "detail": "get returned 101760 normalized samples",
+        "status": "pass"
+      },
+      "gpu_memory_measurement": {
+        "detail": "VRAM polling samples=43, expected>=43, errors=0",
+        "status": "pass"
+      },
+      "host_boundary": {
+        "detail": "qualified host/build boundary matched Linux x86_64, NVIDIA RTX PRO 4000 Blackwell, architecture sm_120a, driver/CUDA/glibc minima, and wheel qwentts revision",
+        "status": "pass"
+      },
+      "isolated_import": {
+        "detail": "module import=lib/python3.12/site-packages/speechflow/qwen3/__init__.py; distribution=speechflow-qwen3 0.6.2; wheel=speechflow_qwen3-0.6.2-py3-none-manylinux_2_38_x86_64.whl; prefix=active runtime",
+        "status": "pass"
+      },
+      "manifest_load": {
+        "detail": "manifest pair resolved talker=qwen-talker-0.6b-customvoice-Q8_0.gguf, codec=qwen-tokenizer-12hz-Q8_0.gguf",
+        "status": "pass"
+      },
+      "native_diagnostic": {
+        "detail": "native operation=qt_init; status=null; diagnostic was non-empty",
+        "status": "pass"
+      },
+      "stream_complete": {
+        "detail": "stream terminated normally after 10 chunks",
+        "status": "pass"
+      },
+      "stream_first_chunk": {
+        "detail": "first chunk arrived with 1920 normalized samples",
+        "status": "pass"
+      },
+      "voice_contract": {
+        "detail": "selected built-in speaker=ryan; available=['serena', 'vivian', 'uncle_fu', 'ryan', 'aiden', 'ono_anna', 'sohee', 'eric', 'dylan']",
+        "status": "pass"
+      },
+      "warmup": {
+        "detail": "cold load completed once as qwen3-tts-0.6b-customvoice-Q8_0",
+        "status": "pass"
+      },
+      "warmup_idempotent": {
+        "detail": "second prepare completed without another native load",
+        "status": "pass"
+      }
+    },
+    "measurements": {
+      "base_conditioning_seconds": null,
+      "cold_load_seconds": 2.08124006199796,
+      "gpu_memory": {
+        "baseline_mib": 1188.0,
+        "errors": [],
+        "expected_sample_count": 43,
+        "peak_delta_mib": 2835.0,
+        "peak_total_mib": 4023.0,
+        "poll_interval_seconds": 0.1,
+        "sample_count": 43
+      },
+      "peak_rss_bytes": 2148184064,
+      "streaming": {
+        "audio_seconds": 4.24,
+        "samples": 101760,
+        "ttfa_seconds": 0.05000415500398958,
+        "wall_rtf": 0.13191069103825456,
+        "wall_seconds": 0.5593013300021994
+      },
+      "warm_get": {
+        "audio_seconds": 4.24,
+        "samples": 101760,
+        "trial_wall_seconds": [
+          0.5120328150005662,
+          0.4990573190007126,
+          0.4723886800056789
+        ],
+        "wall_rtf": 0.11662569292507528,
+        "wall_seconds": 0.49449293800231925
+      }
+    },
+    "run_input": {
+      "build_type": "Release",
+      "concurrency": 1,
+      "language": "en",
+      "options": {
+        "max_new_tokens": 64,
+        "seed": 7
+      },
+      "reference": null,
+      "reference_text_modes": [],
+      "speaker": "ryan",
+      "text": "SpeechFlow multi-architecture qualified synthesis.",
+      "trial_count": 3,
+      "warm_up": "model load completed before measured synthesis"
+    }
+  },
+  "executed_at": "2026-10-16T22:54:29+09:00",
+  "failure": null,
+  "model": {
+    "codec": "qwen-tokenizer-12hz-Q8_0.gguf",
+    "mode": "CustomVoice",
+    "model_id": "qwen3-tts-0.6b-customvoice-Q8_0",
+    "quantization": "Q8_0",
+    "size": "0.6B",
+    "talker": "qwen-talker-0.6b-customvoice-Q8_0.gguf"
+  },
+  "profile": "full-pair",
+  "schema_version": 3,
+  "status": "pass"
+}

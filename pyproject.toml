@@ -1,0 +1,106 @@
+[project]
+name = "speechflow-qwen3"
+dynamic = ["version"]
+description = "Qwen3-TTS in-process engine module for SpeechFlow"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "speechflow>=0.19.2",
+    "numpy>=1.26.4",
+    "nvidia-cuda-runtime==13.3.29; sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "nvidia-cublas==13.6.0.2; sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
+
+[project.urls]
+Repository = "https://github.com/sync-dev-org/speechflow-qwen3"
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "hatchling",
+    "mypy>=2.2.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.24.0",
+    "pyyaml>=6.0.3",
+    "ruff",
+]
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.0.dev0"
+
+[tool.hatch.version.raw-options]
+root = "."
+relative_to = "pyproject.toml"
+version_scheme = "only-version"
+local_scheme = "no-local-version"
+tag_regex = "^v(?P<version>[^/]+)$"
+git_describe_command = [
+    "git",
+    "describe",
+    "--dirty",
+    "--tags",
+    "--long",
+    "--exact-match",
+    "--match",
+    "v*",
+]
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/speechflow/qwen3/_version.py"
+
+[tool.hatch.build]
+dev-mode-dirs = ["src"]
+
+[tool.hatch.build.hooks.custom]
+path = "hatch_build.py"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src/speechflow/qwen3"]
+sources = ["src"]
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+    "hatch_build.py",
+    "src/speechflow/qwen3",
+    "scripts/build_native.sh",
+    "scripts/vendor_source.py",
+    "scripts/qwen.exports.map",
+    "scripts/native-tools/git",
+    "vendor",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "--strict-markers -m 'not gpu and not native_build and not native_payload'"
+markers = [
+    "req(id): ID of the adopted spec item that the test verifies",
+    "gpu: runs qualified-host synthesis with local weights and the native payload",
+    "native_build: builds the vendored CUDA native payload when the required toolchain is available",
+    "native_payload: checks an already built native payload without model weights or a GPU",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+src = ["src", "tests", "scripts", "hatch_build.py"]
+exclude = ["vendor", "build", "src/speechflow/qwen3/_version.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "SIM", "C4", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+explicit_package_bases = true
+mypy_path = "src"
+files = ["src", "tests", "scripts", "hatch_build.py"]
+exclude = ["vendor", "build", "src/speechflow/qwen3/_version.py"]
