@@ -29,8 +29,8 @@ CORE_PYPI_REGISTRY = "https://pypi.org/simple"
 RUNTIME_REQUIREMENTS = [
     "speechflow>=0.19.2",
     "numpy>=1.26.4",
-    "nvidia-cuda-runtime==13.3.29; sys_platform == 'linux' and platform_machine == 'x86_64'",
-    "nvidia-cublas==13.6.0.2; sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "nvidia-cuda-runtime>=13.2,<14; sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "nvidia-cublas>=13.3,<14; sys_platform == 'linux' and platform_machine == 'x86_64'",
 ]
 NATIVE_PAYLOAD_FILENAMES = (
     "libqwen.so",

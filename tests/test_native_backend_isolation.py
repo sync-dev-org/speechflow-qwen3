@@ -13,6 +13,7 @@ ROOT = Path(__file__).parents[1]
 PAYLOAD = ROOT / "src/speechflow/qwen3/_native/libqwen.so"
 
 
+@pytest.mark.req("SP-SFQWEN3-035")
 @pytest.mark.req("SP-SF-069")
 def test_vendored_ggml_backend_loading_functions_do_nothing(native_source: Path) -> None:
     """取り込んだ ggml の中の `ggml_backend_load_all`、`ggml_backend_load_all_from_path`、`ggml_backend_load`
@@ -31,6 +32,7 @@ def test_vendored_ggml_backend_loading_functions_do_nothing(native_source: Path)
         assert "".join(definitions[0].split()) == expected_body, f"{name} must not explore or load backend files"
 
 
+@pytest.mark.req("SP-SFQWEN3-034")
 @pytest.mark.req("SP-SF-068")
 @pytest.mark.native_payload
 def test_qwen_initializes_its_cpu_backend_without_loading_foreign_ggml_files(tmp_path: Path) -> None:

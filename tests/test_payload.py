@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ctypes
 import gc
+from importlib import metadata
 from pathlib import Path
 
 import pytest
@@ -23,6 +24,32 @@ def test_missing_payload_is_a_recoverable_environment_error(tmp_path: Path) -> N
 
 
 @pytest.mark.req("SP-SFQWEN3-019")
+@pytest.mark.parametrize("missing", ["distribution", "library"])
+def test_missing_cuda_dependency_reports_the_supported_runtime_range(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, missing: str
+) -> None:
+    """A missing CUDA dependency identifies the CUDA 13.2 runtime range and how to reinstall it."""
+    (tmp_path / "libqwen.so").write_bytes(b"native")
+
+    def distribution(name: str) -> metadata.PathDistribution:
+        if missing == "distribution":
+            raise metadata.PackageNotFoundError(name)
+        return metadata.PathDistribution(tmp_path / "missing.dist-info")
+
+    monkeypatch.setattr("speechflow.qwen3._payload.metadata.distribution", distribution)
+    with pytest.raises(EnvironmentUnavailableError) as caught:
+        _payload.load_native(native_directory=tmp_path)
+
+    message = str(caught.value)
+    assert "CUDA 13.2" in message
+    assert ">=13.2,<14" in message
+    assert "nvidia-cuda-runtime" in message
+    assert "libcudart.so.13" in message
+    assert "install" in message
+    assert "README.md" in message
+
+
+@pytest.mark.req("SP-SFQWEN3-019")
 def test_unsupported_platform_is_an_environment_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Qwen3 rejects native loading on an unsupported platform."""
     monkeypatch.setattr("speechflow.qwen3._payload.sys.platform", "darwin")
@@ -31,6 +58,7 @@ def test_unsupported_platform_is_an_environment_error(monkeypatch: pytest.Monkey
         _payload.load_native(native_directory=tmp_path)
 
 
+@pytest.mark.req("SP-SFQWEN3-034")
 @pytest.mark.req("SP-SF-068")
 def test_cuda_runtime_loads_before_local_qwen_library(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Native loading opens CUDA libraries globally before a locally scoped qwen library."""

@@ -402,15 +402,15 @@ def _qualified_environment_failure(environment: Mapping[str, Any]) -> str | None
         return f"environment.glibc must be >=2.38, got {environment['glibc']!r}"
     if versions["python_version"][:2] != (3, 12):
         return f"environment.python_version must be in the 3.12 series, got {environment['python_version']!r}"
-    # NVIDIA CUDA 13.3 GA Release Notes, Table 3: Linux >=610.43.02; Windows N/A.
-    # NVIDIA CUDA 13.4 Update 1 Release Notes, Table 2: CUDA 13.3 uses R610.
-    minimum_driver = "610" if "WSL2" in os_name else "610.43.02"
+    # NVIDIA CUDA 13.2 GA Release Notes, Table 3: Linux >=595.45.04; Windows N/A.
+    # https://docs.nvidia.com/cuda/archive/13.2.0/cuda-toolkit-release-notes/index.html
+    minimum_driver = "595" if "WSL2" in os_name else "595.45.04"
     if versions["nvidia_driver"] < _version_components(minimum_driver, field="nvidia_driver"):
         return (
             f"environment.nvidia_driver must be >={minimum_driver} for {os_name}, got {environment['nvidia_driver']!r}"
         )
-    if versions["cuda_runtime"][:2] != (13, 3):
-        return f"environment.cuda_runtime must be in the 13.3 series, got {environment['cuda_runtime']!r}"
+    if not (13, 2) <= versions["cuda_runtime"] < (14,):
+        return f"environment.cuda_runtime must be >=13.2,<14, got {environment['cuda_runtime']!r}"
     return None
 
 
@@ -752,8 +752,8 @@ def validate_record(record: object) -> None:
     cuda_toolkit_version = _require_non_empty_string(
         metadata["cuda_toolkit_version"], field="artifact.build_metadata.cuda_toolkit_version"
     )
-    if not cuda_toolkit_version.startswith("13.3."):
-        raise RecordValidationError("artifact.build_metadata.cuda_toolkit_version must be in the 13.3 series")
+    if not cuda_toolkit_version.startswith("13.2."):
+        raise RecordValidationError("artifact.build_metadata.cuda_toolkit_version must be in the 13.2 series")
     if metadata["qwentts_revision"] != environment["qwentts_revision"]:
         raise RecordValidationError("artifact.build_metadata.qwentts_revision must match environment.qwentts_revision")
     _require_non_empty_string(metadata["ggml_revision"], field="artifact.build_metadata.ggml_revision")

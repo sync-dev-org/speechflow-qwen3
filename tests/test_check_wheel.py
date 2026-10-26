@@ -22,6 +22,9 @@ from scripts.vendor_source import load_sources
 DIST_INFO = "speechflow_qwen3-0.1.0.dist-info"
 EXPECTED_ARCHITECTURES = "86-real;89-real;120a-real"
 EXPECTED_CUBINS = {"sm_86", "sm_89", "sm_120a"}
+CUDA_PLATFORM_MARKER = "sys_platform == 'linux' and platform_machine == 'x86_64'"
+CUDA_MINIMUMS = {"nvidia-cuda-runtime": "13.2", "nvidia-cublas": "13.3"}
+CUDA_REQUIREMENTS = tuple(f"{name}>={minimum},<14; {CUDA_PLATFORM_MARKER}" for name, minimum in CUDA_MINIMUMS.items())
 
 
 def _record_entry(name: str, data: bytes) -> tuple[str, str, str]:
@@ -38,11 +41,13 @@ def _wheel(
     metadata_name: str = "speechflow-qwen3",
     metadata_version: str = "0.1.0",
     core_requirement: str = "speechflow>=0.19.2",
+    cuda_requirements: tuple[str, ...] = CUDA_REQUIREMENTS,
     extra_file: str | None = None,
     omit_payload: str | None = None,
     omit_license: bool = False,
     metadata_architectures: str = EXPECTED_ARCHITECTURES,
     metadata_cpu_baseline: str = "x86-64-v3",
+    metadata_toolkit_version: str = "13.2.51",
 ) -> Path:
     files: dict[str, bytes] = {
         "speechflow/qwen3/__init__.py": b"",
@@ -53,11 +58,8 @@ def _wheel(
             "Requires-Python: >=3.12,<3.14\n"
             f"Requires-Dist: {core_requirement}\n"
             "Requires-Dist: numpy>=1.26.4\n"
-            "Requires-Dist: nvidia-cuda-runtime==13.3.29; "
-            "sys_platform == 'linux' and platform_machine == 'x86_64'\n"
-            "Requires-Dist: nvidia-cublas==13.6.0.2; "
-            "sys_platform == 'linux' and platform_machine == 'x86_64'\n"
-            "\n"
+            + "".join(f"Requires-Dist: {requirement}\n" for requirement in cuda_requirements)
+            + "\n"
         ).encode(),
         f"{dist_info}/WHEEL": (f"Wheel-Version: 1.0\nGenerator: test\nRoot-Is-Purelib: false\nTag: {tag}\n\n").encode(),
     }
@@ -69,7 +71,7 @@ def _wheel(
                         "build_type": "Release",
                         "cmake_cuda_architectures": metadata_architectures,
                         "cpu_baseline": metadata_cpu_baseline,
-                        "cuda_toolkit_version": "13.3.73",
+                        "cuda_toolkit_version": metadata_toolkit_version,
                         "ggml_revision": load_sources()["ggml"].revision,
                         "qwentts_revision": load_sources()["qwentts"].revision,
                         "schema_version": 1,
@@ -96,6 +98,83 @@ def _wheel(
         for name, data in files.items():
             archive.writestr(name, data)
     return wheel
+
+
+@pytest.mark.req("SP-SFQWEN3-019")
+@pytest.mark.req("SP-SFQWEN3-024")
+@pytest.mark.parametrize("lower_first", [True, False])
+def test_wheel_accepts_cuda_13_2_dependency_ranges(tmp_path: Path, lower_first: bool) -> None:
+    """Wheel metadata accepts the CUDA 13.2 runtime and matching cuBLAS package ranges on Linux x86_64."""
+    requirements = tuple(
+        f"{name}{f'>={minimum},<14' if lower_first else f'<14,>={minimum}'}; {CUDA_PLATFORM_MARKER}"
+        for name, minimum in CUDA_MINIMUMS.items()
+    )
+    wheel = _wheel(tmp_path, cuda_requirements=requirements)
+
+    summary = inspect_wheel(
+        wheel,
+        needed_reader=lambda _: {"libcudart.so.13", "libcublas.so.13"},
+        glibc_version_reader=lambda _: {(2, 38)},
+        runtime_paths_reader=lambda _: ("$ORIGIN",),
+        symbol_reader=lambda _: {"qt_version"},
+        cuda_architecture_reader=lambda _: (EXPECTED_CUBINS, False),
+    )
+
+    assert summary["external_dependencies"] == ["libcublas.so.13", "libcudart.so.13"]
+
+
+@pytest.mark.req("SP-SFQWEN3-019")
+@pytest.mark.req("SP-SFQWEN3-024")
+@pytest.mark.parametrize("dependency", ["nvidia-cuda-runtime", "nvidia-cublas"])
+@pytest.mark.parametrize(
+    "requirement_suffix",
+    [
+        f"==13.2.51; {CUDA_PLATFORM_MARKER}",
+        ">={minimum}; " + CUDA_PLATFORM_MARKER,
+        f">=13.0,<14; {CUDA_PLATFORM_MARKER}",
+        ">={minimum},<14.1; " + CUDA_PLATFORM_MARKER,
+        ">={minimum},<14",
+        ">={minimum},<14; sys_platform == 'win32' and platform_machine == 'x86_64'",
+        ">={minimum},<14; sys_platform == 'linux' and platform_machine == 'aarch64'",
+        ">={minimum},<14; sys_platform == 'linux' or platform_machine == 'x86_64'",
+    ],
+)
+def test_wheel_rejects_incorrect_cuda_dependency_ranges_or_platforms(
+    tmp_path: Path, dependency: str, requirement_suffix: str
+) -> None:
+    """Wheel inspection rejects CUDA pins, wrong bounds, and dependencies outside Linux x86_64."""
+    requirement_suffix = requirement_suffix.format(minimum=CUDA_MINIMUMS[dependency])
+    requirements = tuple(
+        f"{dependency}{requirement_suffix}" if requirement.startswith(dependency) else requirement
+        for requirement in CUDA_REQUIREMENTS
+    )
+    wheel = _wheel(tmp_path, cuda_requirements=requirements)
+
+    with pytest.raises(WheelCheckError, match=f"dependency metadata mismatch for {dependency}"):
+        inspect_wheel(
+            wheel,
+            needed_reader=lambda _: set(),
+            glibc_version_reader=lambda _: {(2, 38)},
+            runtime_paths_reader=lambda _: ("$ORIGIN",),
+            symbol_reader=lambda _: {"qt_version"},
+            cuda_architecture_reader=lambda _: (EXPECTED_CUBINS, False),
+        )
+
+
+@pytest.mark.req("SP-SFQWEN3-019")
+@pytest.mark.parametrize("toolkit_version", ["13.1.80", "13.3.73", "14.0.0"])
+def test_wheel_rejects_a_build_from_another_cuda_toolkit(tmp_path: Path, toolkit_version: str) -> None:
+    """The wheel must be built with CUDA 13.2 even when runtime dependency ranges are correct."""
+    wheel = _wheel(tmp_path, metadata_toolkit_version=toolkit_version)
+    with pytest.raises(WheelCheckError, match="cuda_toolkit_version"):
+        inspect_wheel(
+            wheel,
+            needed_reader=lambda _: set(),
+            glibc_version_reader=lambda _: {(2, 38)},
+            runtime_paths_reader=lambda _: ("$ORIGIN",),
+            symbol_reader=lambda _: {"qt_version"},
+            cuda_architecture_reader=lambda _: (EXPECTED_CUBINS, False),
+        )
 
 
 @pytest.mark.req("SP-SFQWEN3-010")
@@ -161,6 +240,7 @@ def test_valid_wheel_reports_tag_payload_and_external_dependencies(tmp_path: Pat
     assert inspected_cubin_paths == ["libqwen.so"]
 
 
+@pytest.mark.req("SP-SFQWEN3-034")
 @pytest.mark.req("SP-SF-068")
 @pytest.mark.parametrize("symbol", ["ggml_backend_init_by_name", "unrelated_export"])
 def test_wheel_rejects_exports_outside_qwen_c_abi(tmp_path: Path, symbol: str) -> None:
@@ -181,6 +261,7 @@ def test_wheel_rejects_exports_outside_qwen_c_abi(tmp_path: Path, symbol: str) -
         )
 
 
+@pytest.mark.req("SP-SFQWEN3-034")
 @pytest.mark.req("SP-SF-068")
 def test_wheel_rejects_a_ggml_dynamic_dependency(tmp_path: Path) -> None:
     """Wheel inspection rejects a shared ggml dependency supplied by its dependency reader."""

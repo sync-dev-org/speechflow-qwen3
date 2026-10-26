@@ -178,7 +178,7 @@ def test_provenance_revision_changes_reach_metadata_wheel_checks_and_qualificati
             sys.executable,
             str(checkout / "scripts/vendor_source.py"),
             "metadata",
-            "13.3.73",
+            "13.2.51",
             "86-real;89-real;120a-real",
         ],
         check=True,

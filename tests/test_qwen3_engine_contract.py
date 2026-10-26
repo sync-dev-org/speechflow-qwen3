@@ -20,6 +20,7 @@ def _assert_unified_signature(method: Callable[..., object]) -> None:
     assert parameters[3].default is None
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-003")
 @pytest.mark.req("SP-SF-053")
 @pytest.mark.parametrize("engine_type", ENGINE_TYPES)
@@ -29,6 +30,7 @@ def test_qwen3_get_is_a_coroutine_with_the_unified_signature(engine_type: type[T
     _assert_unified_signature(engine_type.get)
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-003")
 @pytest.mark.req("SP-SF-053")
 @pytest.mark.parametrize("engine_type", ENGINE_TYPES)
@@ -38,6 +40,7 @@ def test_qwen3_stream_is_an_async_generator_with_the_unified_signature(engine_ty
     _assert_unified_signature(engine_type.stream)
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-003")
 @pytest.mark.parametrize("engine_type", ENGINE_TYPES)
 def test_qwen3_engines_inherit_the_core_base(engine_type: type[TTSEngineBase]) -> None:
@@ -45,6 +48,7 @@ def test_qwen3_engines_inherit_the_core_base(engine_type: type[TTSEngineBase]) -
     assert issubclass(engine_type, TTSEngineBase)
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-059")
 @pytest.mark.parametrize("engine_type", ENGINE_TYPES)
 def test_capabilities_and_health_are_available_without_loading(
@@ -66,6 +70,7 @@ def test_capabilities_and_health_are_available_without_loading(
     assert engine.health().last_progress_monotonic_s is None
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-054")
 @pytest.mark.parametrize("engine_type", ENGINE_TYPES)
 def test_engine_exposes_async_work_and_immediate_reads(engine_type: type[TTSEngineBase]) -> None:

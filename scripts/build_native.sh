@@ -6,13 +6,20 @@ source_root="$repo_root/vendor/qwentts.cpp"
 build_dir="$repo_root/build/native"
 payload_dir="$repo_root/src/speechflow/qwen3/_native"
 identity_tools="$repo_root/scripts/native-tools"
+cuda_home="${CUDA_HOME:-/usr/local/cuda}"
+cuda_compiler="$cuda_home/bin/nvcc"
 
 if [[ ! -f "$source_root/CMakeLists.txt" || ! -f "$source_root/ggml/CMakeLists.txt" ]]; then
   printf 'vendor/qwentts.cpp source is missing or incomplete. Run python3 scripts/fetch_vendor.py from the repository root; move an incomplete snapshot aside first. See vendor/PROVENANCE.md\n' >&2
   exit 1
 fi
-if [[ ! -x /usr/local/cuda/bin/nvcc ]]; then
-  printf 'CUDA 13.3 compiler is missing: /usr/local/cuda/bin/nvcc\n' >&2
+if [[ ! -x "$cuda_compiler" ]]; then
+  printf 'CUDA 13.2 compiler is missing: %s\n' "$cuda_compiler" >&2
+  exit 1
+fi
+cuda_toolkit_version=$("$cuda_compiler" --version | sed -n 's/.* V\([0-9][0-9.]*\)$/\1/p' | tail -n 1)
+if [[ "$cuda_toolkit_version" != 13.2.* ]]; then
+  printf 'CUDA 13.2 toolkit is required: compiler=%s, version=%s\n' "$cuda_compiler" "$cuda_toolkit_version" >&2
   exit 1
 fi
 
@@ -43,7 +50,8 @@ PATH="$identity_tools:$PATH" cmake -S "$source_root" -B "$build_dir" -G Ninja \
   -DGGML_AVX512_VNNI=OFF \
   -DGGML_AVX512_BF16=OFF \
   '-DCMAKE_CUDA_ARCHITECTURES=86-real;89-real;120a-real' \
-  -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+  "-DCMAKE_CUDA_COMPILER=$cuda_compiler" \
+  "-DCUDAToolkit_ROOT=$cuda_home"
 
 PATH="$identity_tools:$PATH" cmake --build "$build_dir" \
   --target qwen test-abi-c \
@@ -80,11 +88,6 @@ for command in cuda_commands:
         )
 PY
 architectures=$expected_architectures
-cuda_toolkit_version=$(/usr/local/cuda/bin/nvcc --version | sed -n 's/.* V\([0-9][0-9.]*\)$/\1/p' | tail -n 1)
-if [[ "$cuda_toolkit_version" != 13.3.* ]]; then
-  printf 'unexpected CUDA toolkit version: %s\n' "$cuda_toolkit_version" >&2
-  exit 1
-fi
 python3 "$repo_root/scripts/vendor_source.py" metadata \
   "$cuda_toolkit_version" "$architectures" > "$payload_dir/BUILD-METADATA.json"
 

@@ -512,6 +512,7 @@ def test_codec_chunk_sec_cannot_change_after_construction(
     assert binding.load_calls == 0
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-055")
 def test_constructor_is_structural_lazy_and_model_source_is_immutable(
     engine_setup: tuple[Any, FakeBinding, Any],
@@ -666,6 +667,9 @@ async def _synthesize_for_language(instance: Any, method: str, kwargs: dict[str,
         _ = [chunk async for chunk in instance.stream("Speech", **kwargs)]
 
 
+@pytest.mark.req("SP-SFQWEN3-030")
+@pytest.mark.req("SP-SFQWEN3-031")
+@pytest.mark.req("SP-SFQWEN3-032")
 @pytest.mark.req("SP-SF-064")
 @pytest.mark.req("SP-SF-065")
 @pytest.mark.req("SP-SF-066")
@@ -687,6 +691,7 @@ async def test_language_code_reaches_native_request_as_qwen3_language_name(
     assert binding.requests[-1].language == native_name
 
 
+@pytest.mark.req("SP-SFQWEN3-030")
 @pytest.mark.req("SP-SF-064")
 @pytest.mark.parametrize("mode", ["CustomVoice", "Base"])
 @pytest.mark.parametrize("method", ["get", "stream"])
@@ -713,6 +718,7 @@ async def test_native_language_name_is_rejected_with_common_code_suggestion(
     assert binding.synth_calls == 0
 
 
+@pytest.mark.req("SP-SFQWEN3-029")
 @pytest.mark.req("SP-SF-063")
 @pytest.mark.parametrize("mode", ["CustomVoice", "Base"])
 @pytest.mark.parametrize("method", ["get", "stream"])
@@ -735,6 +741,7 @@ async def test_rejected_english_variants_identify_the_common_language_code(
     assert binding.synth_calls == 0
 
 
+@pytest.mark.req("SP-SFQWEN3-029")
 @pytest.mark.req("SP-SF-063")
 @pytest.mark.parametrize(
     ("language", "code"),
@@ -767,6 +774,7 @@ async def test_rejected_three_letter_language_codes_identify_the_two_letter_code
     assert binding.synth_calls == 0
 
 
+@pytest.mark.req("SP-SFQWEN3-030")
 @pytest.mark.req("SP-SF-064")
 @pytest.mark.parametrize("language", ["yue", "haw", "Hawaiian", "xx"])
 async def test_unsupported_language_lists_accepted_codes(
@@ -785,6 +793,7 @@ async def test_unsupported_language_lists_accepted_codes(
     assert binding.synth_calls == 0
 
 
+@pytest.mark.req("SP-SFQWEN3-030")
 @pytest.mark.req("SP-SF-064")
 @pytest.mark.parametrize("mode", ["CustomVoice", "Base"])
 @pytest.mark.parametrize("method", ["get", "stream"])
@@ -1004,6 +1013,7 @@ async def test_clone_uses_one_shot_reference_without_named_state(
     assert not hasattr(instance, "register_voice")
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-061")
 @pytest.mark.parametrize(
     ("audio", "error_type"),
@@ -1028,6 +1038,7 @@ async def test_buffered_empty_output_contract(
         await instance.get("Empty")
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-060")
 @pytest.mark.parametrize(
     ("sample_rate", "channels", "shape"),
@@ -1055,6 +1066,7 @@ async def test_buffered_invalid_native_audio_is_inference_error(
         await instance.get("Bad audio")
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-061")
 async def test_stream_preserves_chunk_order_and_rejects_empty_output(
     engine_setup: tuple[Any, FakeBinding, Any],
@@ -1076,6 +1088,7 @@ async def test_stream_preserves_chunk_order_and_rejects_empty_output(
         _ = [chunk async for chunk in instance.stream("Empty")]
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-060")
 @pytest.mark.parametrize("valid_chunks", [0, 1])
 async def test_stream_native_failure_is_inference_error_before_or_after_audio(
@@ -1100,6 +1113,7 @@ async def test_stream_native_failure_is_inference_error_before_or_after_audio(
     assert "qt_synthesize" in str(caught.value)
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-060")
 @pytest.mark.parametrize("valid_chunks", [0, 1])
 async def test_stream_invalid_audio_is_inference_error_before_or_after_audio(
@@ -1116,6 +1130,7 @@ async def test_stream_invalid_audio_is_inference_error_before_or_after_audio(
     assert "invalid audio" in str(caught.value)
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-055")
 async def test_prepare_converges_on_one_attempt_and_failure_allows_a_new_attempt(
     engine_setup: tuple[Any, FakeBinding, Any],
@@ -1138,6 +1153,7 @@ async def test_prepare_converges_on_one_attempt_and_failure_allows_a_new_attempt
     assert other_binding.load_calls == 2
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-055")
 async def test_queued_prepare_retries_after_a_failed_load(engine_setup: tuple[Any, FakeBinding, Any]) -> None:
     """A queued prepare retries after a failed load and leaves the engine ready."""
@@ -1159,6 +1175,7 @@ async def test_queued_prepare_retries_after_a_failed_load(engine_setup: tuple[An
     await instance.aclose()
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-055")
 async def test_prepare_timeout_waits_for_native_load_and_keeps_success(
     engine_setup: tuple[Any, FakeBinding, Any],
@@ -1186,6 +1203,7 @@ async def test_prepare_timeout_waits_for_native_load_and_keeps_success(
     await instance.aclose()
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-056")
 async def test_close_during_prepare_waits_and_releases_late_context(engine_setup: tuple[Any, FakeBinding, Any]) -> None:
     """Closing during loading waits for native loading and releases its context once."""
@@ -1206,6 +1224,7 @@ async def test_close_during_prepare_waits_and_releases_late_context(engine_setup
     assert instance.health().state == "closed"
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-060")
 async def test_prepare_translates_native_load_failure(engine_setup: tuple[Any, FakeBinding, Any]) -> None:
     """A native model load failure becomes TTSError with the native error as its cause."""
@@ -1220,6 +1239,7 @@ async def test_prepare_translates_native_load_failure(engine_setup: tuple[Any, F
     assert isinstance(caught.value.__cause__, native.NativeCallError)
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-058")
 async def test_caller_cancellation_reaches_native_and_waits_for_completion(
     engine_setup: tuple[Any, FakeBinding, Any],
@@ -1240,6 +1260,7 @@ async def test_caller_cancellation_reaches_native_and_waits_for_completion(
     assert binding.active_calls == 0
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-058")
 async def test_stream_consumer_cancellation_reaches_native_and_waits_for_completion(
     engine_setup: tuple[Any, FakeBinding, Any],
@@ -1262,6 +1283,7 @@ async def test_stream_consumer_cancellation_reaches_native_and_waits_for_complet
     await stream.aclose()
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-058")
 async def test_stream_early_close_after_first_chunk_reaches_native_cancellation(
     engine_setup: tuple[Any, FakeBinding, Any],
@@ -1298,6 +1320,7 @@ async def test_stream_early_close_after_first_chunk_reaches_native_cancellation(
     await instance.aclose()
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-057")
 @pytest.mark.req("SP-SF-051")
 async def test_native_operations_are_serialized_and_event_loop_keeps_progressing(
@@ -1324,6 +1347,7 @@ async def test_native_operations_are_serialized_and_event_loop_keeps_progressing
     assert set(binding.thread_ids) != {threading.get_ident()}
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-056")
 async def test_close_is_idempotent_waits_for_active_call_and_rejects_future_work(
     engine_setup: tuple[Any, FakeBinding, Any],
@@ -1348,6 +1372,7 @@ async def test_close_is_idempotent_waits_for_active_call_and_rejects_future_work
     assert binding.free_calls == 1
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-056")
 @pytest.mark.parametrize("kind", ["custom", "clone"])
 async def test_work_is_rejected_after_close_and_reads_show_closed(
@@ -1389,6 +1414,7 @@ async def test_missing_editable_payload_is_reported_at_model_load_time(
         await instance.prepare()
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-046")
 def test_loaded_unclosed_engine_does_not_block_interpreter_exit() -> None:
     """A loaded engine that is never closed does not block interpreter exit."""
@@ -1429,6 +1455,7 @@ print("loaded")
     assert completed.stdout.strip() == "loaded"
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-055")
 @pytest.mark.req("SP-SF-053")
 @pytest.mark.parametrize("kind", ["custom", "clone"])
@@ -1449,6 +1476,7 @@ async def test_unprepared_work_reports_state_without_loading(
     await instance.aclose()
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-055")
 @pytest.mark.parametrize("kind", ["custom", "clone"])
 async def test_prepare_loads_and_trials_once_with_internal_input(
@@ -1480,6 +1508,7 @@ async def test_prepare_loads_and_trials_once_with_internal_input(
     await instance.aclose()
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-055")
 @pytest.mark.req("SP-SF-061")
 @pytest.mark.parametrize("kind", ["custom", "clone"])
@@ -1508,6 +1537,7 @@ async def test_empty_trial_releases_context_and_allows_prepare_retry(
     assert binding.free_calls == 2
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-055")
 @pytest.mark.req("SP-SF-060")
 async def test_trial_failure_releases_partial_context_and_allows_retry(
@@ -1562,6 +1592,7 @@ async def test_caller_cannot_select_internal_decode_mode(
     await instance.aclose()
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-058")
 @pytest.mark.parametrize("operation", ["prepare", "get", "stream"])
 async def test_cancelled_native_work_finishes_before_return_and_observes_failure(

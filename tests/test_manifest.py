@@ -152,6 +152,7 @@ def test_invalid_weight_identity_is_rejected_without_modifying_inputs(
     assert {path: path.read_bytes() for path in before} == before
 
 
+@pytest.mark.req("SP-SFQWEN3-036")
 @pytest.mark.req("SP-SF-060")
 @pytest.mark.parametrize("contents", [None, "invalid JSON", '{"manifest_version": 1, "models": []}'])
 def test_unreadable_or_invalid_package_manifest_reports_environment(

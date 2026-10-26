@@ -17,6 +17,7 @@ from email.parser import BytesParser
 from pathlib import Path
 from typing import Any
 
+from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name, parse_wheel_filename
 from packaging.version import InvalidVersion, Version
 
@@ -105,13 +106,20 @@ def _check_metadata(archive: zipfile.ZipFile, names: list[str]) -> tuple[str, st
     dependencies = [str(value) for value in metadata.get_all("Requires-Dist", [])]
     required_fragments = {
         "numpy": (">=1.26.4",),
-        "nvidia-cuda-runtime": ("==13.3.29", "sys_platform", "platform_machine"),
-        "nvidia-cublas": ("==13.6.0.2", "sys_platform", "platform_machine"),
     }
     for dependency, fragments in required_fragments.items():
         matches = [value for value in dependencies if value.lower().startswith(dependency)]
         if len(matches) != 1 or not all(fragment in matches[0] for fragment in fragments):
             raise WheelCheckError(f"dependency metadata mismatch for {dependency}: {matches}")
+    try:
+        parsed_dependencies = [Requirement(value) for value in dependencies]
+    except InvalidRequirement as exc:
+        raise WheelCheckError(f"invalid dependency metadata: {exc}") from exc
+    for dependency, minimum in (("nvidia-cuda-runtime", "13.2"), ("nvidia-cublas", "13.3")):
+        expected = Requirement(f"{dependency}>={minimum},<14; sys_platform == 'linux' and platform_machine == 'x86_64'")
+        cuda_matches = [value for value in parsed_dependencies if canonicalize_name(value.name) == dependency]
+        if cuda_matches != [expected]:
+            raise WheelCheckError(f"dependency metadata mismatch for {dependency}: {cuda_matches}")
     core_matches = [value for value in dependencies if value.lower().startswith("speechflow")]
     if core_matches != ["speechflow>=0.19.2"]:
         raise WheelCheckError(f"dependency metadata mismatch for speechflow: {core_matches}")
@@ -212,7 +220,7 @@ def _check_build_metadata(archive: zipfile.ZipFile) -> None:
     for key, value in expected.items():
         if build_metadata.get(key) != value:
             raise WheelCheckError(f"build metadata mismatch for {key}: {build_metadata.get(key)!r}")
-    if not str(build_metadata.get("cuda_toolkit_version", "")).startswith("13.3."):
+    if not str(build_metadata.get("cuda_toolkit_version", "")).startswith("13.2."):
         raise WheelCheckError(
             f"build metadata mismatch for cuda_toolkit_version: {build_metadata.get('cuda_toolkit_version')!r}"
         )

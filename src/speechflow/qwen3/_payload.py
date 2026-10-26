@@ -53,7 +53,7 @@ def _distribution_library(distribution_name: str, relative_path: str) -> Path:
         distribution = metadata.distribution(distribution_name)
     except metadata.PackageNotFoundError as exc:
         raise _environment_error(
-            why="a CUDA 13.3 user-space runtime dependency is not installed",
+            why="a CUDA 13.2 or newer user-space runtime dependency (>=13.2,<14) is not installed",
             what=f"distribution={distribution_name}, path={relative_path}",
             how="install speechflow-qwen3 with dependencies and consult README.md",
             cause=exc,
@@ -62,7 +62,7 @@ def _distribution_library(distribution_name: str, relative_path: str) -> Path:
     path = Path(str(distribution.locate_file(relative_path))).resolve()
     if not path.is_file():
         raise _environment_error(
-            why="a CUDA 13.3 user-space runtime library cannot be resolved",
+            why="a CUDA 13.2 or newer user-space runtime library (>=13.2,<14) cannot be resolved",
             what=f"distribution={distribution_name}, path={path}",
             how="reinstall speechflow-qwen3 with dependencies and consult README.md",
         )
@@ -76,7 +76,7 @@ def _load_library(path: Path, *, mode: int) -> Any:
         raise _environment_error(
             why="a required native library could not be loaded",
             what=f"path={path}, error={exc}",
-            how="verify the CUDA 13.3 driver/runtime boundary and consult README.md",
+            how="verify the driver supports CUDA 13.2 or newer and the runtime is >=13.2,<14; consult README.md",
             cause=exc,
         ) from exc
 

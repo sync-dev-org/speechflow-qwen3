@@ -1,12 +1,12 @@
 # speechflow-qwen3
 
-Qwen3-TTS の qwentts.cpp runtime を Python process 内で実行する SpeechFlow engine module です。この checkout の native build は Linux x86_64、glibc 2.38 以上、CUDA 13.3 を対象とします。
+Qwen3-TTS の qwentts.cpp runtime を Python process 内で実行する SpeechFlow engine module です。この checkout の native build は Linux x86_64、glibc 2.38 以上、CUDA 13.2 を対象とします。
 
 ## 対応環境
 
 CPU ISA の下限は x86-64-v3 (AVX2 / FMA / F16C) です。producer 固有の CPU 命令へ最適化せず、AVX-512 は有効にしません。
 
-NVIDIA driver は host が提供し、CUDA 13.3 以上に対応する必要があります。CUDA 13.3 の user-space library (`libcudart.so.13`、`libcublas.so.13`、`libcublasLt.so.13`) は Python dependency が提供します。runtime host に system CUDA toolkit、compiler、CMake、Ninja、外部 build directory は必要ありません。
+NVIDIA driver は host が提供し、CUDA 13.2 以上に対応する必要があります。CUDA 13.2 以上の user-space library (`libcudart.so.13`、`libcublas.so.13`、`libcublasLt.so.13`) は Python dependency が提供します。CUDA 13.2 GA に対応する package の下限は `nvidia-cuda-runtime` が 13.2、`nvidia-cublas` が 13.3 で、どちらも 14 未満です。runtime host に system CUDA toolkit、compiler、CMake、Ninja、外部 build directory は必要ありません。
 
 標準 build は `CMAKE_CUDA_ARCHITECTURES=86-real;89-real;120a-real` を使い、compute capability 8.6、compute capability 8.9、compute capability 12.0 の real cubin を同じ wheel に含めます。
 
@@ -143,9 +143,10 @@ uv lock --upgrade-package speechflow
 
 ## 開発用 native build
 
-CUDA 13.3 toolkit、CMake 3.31 以上、Ninja、GCC/G++ を備えた Linux x86_64 host で実行します。CMake と Ninja の入れ方は問いません。`vendor/qwentts.cpp/` が無い場合は、先に `python3 scripts/fetch_vendor.py` で source を取得してください。
+CUDA 13.2 toolkit、CMake 3.31 以上、Ninja、GCC/G++ を備えた Linux x86_64 host で実行します。開発者は、toolkit の場所を `CUDA_HOME` で指定できます。未設定の場合、script は `/usr/local/cuda` を使います。CMake と Ninja の入れ方は問いません。`vendor/qwentts.cpp/` が無い場合は、先に `python3 scripts/fetch_vendor.py` で source を取得してください。
 
 ```bash
+export CUDA_HOME=/absolute/path/to/cuda-13.2
 scripts/build_native.sh
 ```
 
@@ -164,11 +165,12 @@ CUDA_VISIBLE_DEVICES= uv run pytest -m native_payload tests/test_native_backend_
 以下の `<X.Y.Z>` は build する version に置き換えます。
 
 ```bash
+export CUDA_HOME=/absolute/path/to/cuda-13.2
 uv build --wheel
 uv run python scripts/check_wheel.py "dist/speechflow_qwen3-<X.Y.Z>-py3-none-manylinux_2_38_x86_64.whl"
 ```
 
-生成 tag は `py3-none-manylinux_2_38_x86_64` です。検査 script は wheel filename / `.dist-info` / metadata の identity、namespace ownership、payload、license notice、RECORD/CRC、native dependency allowlist、同梱 ELF の `$ORIGIN` 以外の RPATH / RUNPATH がないことを検証します。`libqwen.so` の公開 symbol が `qt_*` だけで、`DT_NEEDED` に `libggml*.so*` がないことも検証します。wheel から `libqwen.so` を取り出し、`cuobjdump` で cubin 集合が `sm_86` / `sm_89` / `sm_120a` と完全一致し、PTX がないことを検証します。`readelf` で要求する glibc symbol の最大が配布対象の下限 2.38 以下であることも検証します。CUDA user-space libraries は Linux x86_64 marker 付き dependency `nvidia-cuda-runtime==13.3.29` と `nvidia-cublas==13.6.0.2` が供給します。NVIDIA driver の `libcuda.so.1` は host の前提です。
+生成 tag は `py3-none-manylinux_2_38_x86_64` です。検査 script は wheel filename / `.dist-info` / metadata の identity、namespace ownership、payload、license notice、RECORD/CRC、native dependency allowlist、同梱 ELF の `$ORIGIN` 以外の RPATH / RUNPATH がないことを検証します。`libqwen.so` の公開 symbol が `qt_*` だけで、`DT_NEEDED` に `libggml*.so*` がないことも検証します。wheel から `libqwen.so` を取り出し、`cuobjdump` で cubin 集合が `sm_86` / `sm_89` / `sm_120a` と完全一致し、PTX がないことを検証します。`readelf` で要求する glibc symbol の最大が配布対象の下限 2.38 以下であることも検証します。CUDA user-space libraries は Linux x86_64 marker 付き dependency `nvidia-cuda-runtime>=13.2,<14` と `nvidia-cublas>=13.3,<14` が供給します。NVIDIA driver の `libcuda.so.1` は host の前提です。
 
 ## Qualified test
 

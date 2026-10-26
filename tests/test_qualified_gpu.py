@@ -108,7 +108,7 @@ def _environment(*, cuda_architecture: str = "sm_120a") -> dict[str, object]:
         "glibc": "2.43",
         "python_version": "3.12.10",
         "nvidia_driver": "616.92",
-        "cuda_runtime": "13.3.29",
+        "cuda_runtime": "13.2.51",
         "gpu_compute_capability": capability,
         "cuda_architecture": cuda_architecture,
         "physical_gpu_index": 0,
@@ -126,7 +126,7 @@ def _build_metadata() -> dict[str, object]:
         "cpu_baseline": "x86-64-v3",
         "qwentts_revision": qualified_gpu.QUALIFIED_QWENTTS_REVISION,
         "ggml_revision": load_sources()["ggml"].revision,
-        "cuda_toolkit_version": "13.3.73",
+        "cuda_toolkit_version": "13.2.51",
         "cmake_cuda_architectures": "86-real;89-real;120a-real",
     }
 
@@ -248,15 +248,26 @@ def test_record_rejects_tag_commit_in_schema_version_3() -> None:
 
 
 @pytest.mark.req("SP-SFQWEN3-019")
+@pytest.mark.parametrize("runtime", ["13.2.51", "13.4.0", "13.9.1"])
+def test_qualified_record_accepts_cuda_runtimes_from_13_2(runtime: str) -> None:
+    """Qualified evidence accepts CUDA 13 user-space libraries starting at 13.2."""
+    record = _record()
+    cast(dict[str, object], record["environment"])["cuda_runtime"] = runtime
+    qualified_gpu.validate_record(record)
+    assert record["status"] == "pass"
+
+
+@pytest.mark.req("SP-SFQWEN3-019")
 @pytest.mark.parametrize(
     ("field", "value", "message"),
     [
-        ("cuda_runtime", "12.9.79", "cuda_runtime"),
+        ("cuda_runtime", "13.1.80", "cuda_runtime"),
+        ("cuda_runtime", "14.0.0", "cuda_runtime"),
         ("nvidia_driver", "575.51.03", "nvidia_driver"),
     ],
 )
-def test_cuda_13_qualification_rejects_an_old_runtime_or_driver(field: str, value: str, message: str) -> None:
-    """Qualified evidence rejects a runtime or driver below the CUDA 13.3 target."""
+def test_cuda_13_qualification_rejects_an_unsupported_runtime_or_driver(field: str, value: str, message: str) -> None:
+    """Qualified evidence rejects runtimes outside >=13.2,<14 and drivers below the CUDA 13.2 minimum."""
     record = _record()
     cast(dict[str, object], record["environment"])[field] = value
     with pytest.raises(qualified_gpu.RecordValidationError, match=message):
@@ -269,24 +280,24 @@ def test_cuda_13_qualification_rejects_an_old_runtime_or_driver(field: str, valu
     [
         pytest.param(
             "Linux x86_64; Ubuntu 24.04",
-            "610.43.02",
-            ("610.43.02",),
-            ("610.43.01", "580.65.06"),
+            "595.45.04",
+            ("595.45.04", "610.43.02"),
+            ("595.45.03", "580.65.06"),
             id="linux",
         ),
         pytest.param(
             "Linux x86_64; Ubuntu 24.04 / WSL2",
-            "610",
-            ("610.0", "610.47", "616.92"),
-            ("609.99", "580.65.06"),
+            "595",
+            ("595.0", "595.45", "616.92"),
+            ("594.99", "580.65.06"),
             id="wsl2",
         ),
     ],
 )
-def test_cuda_13_3_qualification_requires_the_driver_floor_for_its_os(
+def test_cuda_13_2_qualification_requires_the_driver_floor_for_its_os(
     os_name: str, minimum: str, accepted: tuple[str, ...], rejected: tuple[str, ...]
 ) -> None:
-    """Qualified evidence requires a CUDA 13.3 compatible driver for its host OS."""
+    """Qualified evidence requires a CUDA 13.2 compatible driver for its host OS."""
     record = _record()
     environment = cast(dict[str, object], record["environment"])
     environment["os"] = os_name
@@ -318,11 +329,12 @@ def test_qualified_record_requires_glibc_2_38_or_newer() -> None:
 
 
 @pytest.mark.req("SP-SFQWEN3-019")
-def test_cuda_13_qualification_rejects_cuda_12_build_metadata() -> None:
-    """Qualified evidence rejects a native build below CUDA 13.3."""
+@pytest.mark.parametrize("toolkit_version", ["12.9.86", "13.1.80", "13.3.73", "14.0.0"])
+def test_cuda_13_2_qualification_rejects_other_toolkit_build_metadata(toolkit_version: str) -> None:
+    """Qualified evidence requires a native build from the CUDA 13.2 toolkit series."""
     record = _record()
     artifact = cast(dict[str, object], record["artifact"])
-    cast(dict[str, object], artifact["build_metadata"])["cuda_toolkit_version"] = "12.9.86"
+    cast(dict[str, object], artifact["build_metadata"])["cuda_toolkit_version"] = toolkit_version
     with pytest.raises(qualified_gpu.RecordValidationError, match="cuda_toolkit_version"):
         qualified_gpu.validate_record(record)
 
@@ -407,6 +419,7 @@ def test_record_preserves_the_module_wheel_distribution_and_platform_contract(wh
         qualified_gpu.validate_record(record)
 
 
+@pytest.mark.req("SP-SFQWEN3-037")
 @pytest.mark.req("SP-SF-028")
 def test_record_requires_the_version_tag_prefix() -> None:
     """The release tag retains its v prefix when its version matches the wheel."""
@@ -416,6 +429,7 @@ def test_record_requires_the_version_tag_prefix() -> None:
         qualified_gpu.validate_record(record)
 
 
+@pytest.mark.req("SP-SFQWEN3-037")
 @pytest.mark.req("SP-SF-028")
 @pytest.mark.parametrize("version", ["", "garbage", "0.5", "0.5.0rc1", "0.5.0.dev1"])
 def test_record_rejects_matching_versions_outside_the_release_tag_format(version: str) -> None:
@@ -1624,6 +1638,7 @@ def test_cli_accepts_a_release_tag_matching_the_module_wheel(tmp_path: Path, ver
     assert args.module_wheel == module_wheel
 
 
+@pytest.mark.req("SP-SFQWEN3-037")
 @pytest.mark.req("SP-SFQWEN3-017")
 @pytest.mark.req("SP-SF-028")
 @pytest.mark.parametrize(
@@ -1648,6 +1663,7 @@ def test_cli_rejects_a_release_tag_that_does_not_match_the_module_wheel(
     assert not output.exists()
 
 
+@pytest.mark.req("SP-SFQWEN3-037")
 @pytest.mark.req("SP-SF-028")
 @pytest.mark.parametrize("version", ["", "garbage", "0.5", "0.5.0rc1", "0.5.0.dev1"])
 def test_cli_rejects_matching_versions_outside_the_release_tag_format(
