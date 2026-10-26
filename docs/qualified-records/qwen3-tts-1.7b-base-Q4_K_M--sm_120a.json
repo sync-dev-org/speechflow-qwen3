@@ -4,7 +4,7 @@
       "build_type": "Release",
       "cmake_cuda_architectures": "86-real;89-real;120a-real",
       "cpu_baseline": "x86-64-v3",
-      "cuda_toolkit_version": "13.3.73",
+      "cuda_toolkit_version": "13.2.51",
       "ggml_revision": "c044c6f03892f9d5e98213b05f8afea1f8b0d3c9",
       "qwentts_revision": "a8a7716b530e49fed537c57711247c12fbbb903c",
       "schema_version": 1
@@ -12,15 +12,15 @@
     "core_wheel": "speechflow-0.19.2-py3-none-any.whl",
     "core_wheel_sha256": "2224905a292ed399d45466f504e681f22772f11aadeda060147b38eebbe20ca0",
     "module_import_path": "lib/python3.12/site-packages/speechflow/qwen3/__init__.py",
-    "module_wheel": "speechflow_qwen3-0.6.2-py3-none-manylinux_2_38_x86_64.whl",
-    "module_wheel_sha256": "31096cb1fbe6c73642388f31d9921bca0ef286e18638014fd79d62f7ae4ff57c",
-    "release_tag": "v0.6.2",
+    "module_wheel": "speechflow_qwen3-0.6.3-py3-none-manylinux_2_38_x86_64.whl",
+    "module_wheel_sha256": "fa37066c787e3fab08007b8e1e82dca6fe40e10d0f64e40027fbe91421b197ea",
+    "release_tag": "v0.6.3",
     "repository": "sync-dev-org/speechflow-qwen3"
   },
   "environment": {
     "co_resident_gpu_note": "",
     "cuda_architecture": "sm_120a",
-    "cuda_runtime": "13.3.29",
+    "cuda_runtime": "13.4.92",
     "glibc": "2.43",
     "gpu_compute_capability": "12.0",
     "gpu_count": 1,
@@ -55,7 +55,7 @@
         "status": "pass"
       },
       "gpu_memory_measurement": {
-        "detail": "VRAM polling samples=59, expected>=59, errors=0",
+        "detail": "VRAM polling samples=69, expected>=69, errors=0",
         "status": "pass"
       },
       "host_boundary": {
@@ -63,7 +63,7 @@
         "status": "pass"
       },
       "isolated_import": {
-        "detail": "module import=lib/python3.12/site-packages/speechflow/qwen3/__init__.py; distribution=speechflow-qwen3 0.6.2; wheel=speechflow_qwen3-0.6.2-py3-none-manylinux_2_38_x86_64.whl; prefix=active runtime",
+        "detail": "module import=lib/python3.12/site-packages/speechflow/qwen3/__init__.py; distribution=speechflow-qwen3 0.6.3; wheel=speechflow_qwen3-0.6.3-py3-none-manylinux_2_38_x86_64.whl; prefix=active runtime",
         "status": "pass"
       },
       "manifest_load": {
@@ -97,38 +97,38 @@
     },
     "measurements": {
       "base_conditioning_seconds": [
-        0.16514526700484566,
-        0.15788262700516498,
-        0.15917009000258986
+        0.16036094300216064,
+        0.154602007009089,
+        0.15233330702176318
       ],
-      "cold_load_seconds": 2.208323338003538,
+      "cold_load_seconds": 3.212649881024845,
       "gpu_memory": {
-        "baseline_mib": 1188.0,
+        "baseline_mib": 1163.0,
         "errors": [],
-        "expected_sample_count": 59,
-        "peak_delta_mib": 3557.0,
-        "peak_total_mib": 4745.0,
+        "expected_sample_count": 69,
+        "peak_delta_mib": 3596.0,
+        "peak_total_mib": 4759.0,
         "poll_interval_seconds": 0.1,
-        "sample_count": 59
+        "sample_count": 69
       },
-      "peak_rss_bytes": 2527977472,
+      "peak_rss_bytes": 2539429888,
       "streaming": {
         "audio_seconds": 3.6,
         "samples": 86400,
-        "ttfa_seconds": 0.055668670996965375,
-        "wall_rtf": 0.13004196611089153,
-        "wall_seconds": 0.4681510779992095
+        "ttfa_seconds": 0.05537736596306786,
+        "wall_rtf": 0.130642219721469,
+        "wall_seconds": 0.4703119909972884
       },
       "warm_get": {
         "audio_seconds": 5.12,
         "samples": 122880,
         "trial_wall_seconds": [
-          0.8304081149981357,
-          0.7453776219990687,
-          0.7036774139996851
+          0.7794836109969765,
+          0.75588350801263,
+          0.7090160209918395
         ],
-        "wall_rtf": 0.14840254889302665,
-        "wall_seconds": 0.7598210503322965
+        "wall_rtf": 0.1461186940105108,
+        "wall_seconds": 0.7481277133338153
       }
     },
     "run_input": {
@@ -150,7 +150,7 @@
       "warm_up": "model load completed before measured synthesis"
     }
   },
-  "executed_at": "2026-10-16T22:54:57+09:00",
+  "executed_at": "2026-10-26T18:54:02+09:00",
   "failure": null,
   "model": {
     "codec": "qwen-tokenizer-12hz-Q4_K_M.gguf",
