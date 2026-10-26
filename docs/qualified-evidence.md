@@ -15,14 +15,14 @@ native target の同梱と実機 runtime evidence を区別し、性能値に合
 
 | Model identifier | Gate | Executed at | Architecture | Record | Warm get (s) | Streaming TTFA (s) | Peak RSS (bytes) | Peak VRAM delta (MiB) |
 |---|---|---|---|---|---:|---:|---:|---:|
-| `qwen3-tts-0.6b-customvoice-Q4_K_M` | qualified | 2026-10-26T18:53:27+09:00 | sm_120a | [qwen3-tts-0.6b-customvoice-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-0.6b-customvoice-Q4_K_M--sm_120a.json) | 0.454 | 0.632 | 1822490624 | 2462.000 |
-| `qwen3-tts-0.6b-customvoice-Q8_0` | qualified | 2026-10-26T18:53:34+09:00 | sm_120a | [qwen3-tts-0.6b-customvoice-Q8_0--sm_120a.json](qualified-records/qwen3-tts-0.6b-customvoice-Q8_0--sm_120a.json) | — | — | — | — |
-| `qwen3-tts-0.6b-base-Q4_K_M` | qualified | 2026-10-26T18:53:50+09:00 | sm_120a | [qwen3-tts-0.6b-base-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-0.6b-base-Q4_K_M--sm_120a.json) | 0.671 | 0.056 | 1960865792 | 2948.000 |
-| `qwen3-tts-0.6b-base-Q8_0` | qualified | 2026-10-26T18:53:56+09:00 | sm_120a | [qwen3-tts-0.6b-base-Q8_0--sm_120a.json](qualified-records/qwen3-tts-0.6b-base-Q8_0--sm_120a.json) | — | — | — | — |
-| `qwen3-tts-1.7b-customvoice-Q4_K_M` | qualified | 2026-10-26T18:53:39+09:00 | sm_120a | [qwen3-tts-1.7b-customvoice-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-1.7b-customvoice-Q4_K_M--sm_120a.json) | — | — | — | — |
-| `qwen3-tts-1.7b-customvoice-Q8_0` | qualified | 2026-10-26T18:53:44+09:00 | sm_120a | [qwen3-tts-1.7b-customvoice-Q8_0--sm_120a.json](qualified-records/qwen3-tts-1.7b-customvoice-Q8_0--sm_120a.json) | — | — | — | — |
-| `qwen3-tts-1.7b-base-Q4_K_M` | qualified | 2026-10-26T18:54:02+09:00 | sm_120a | [qwen3-tts-1.7b-base-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-1.7b-base-Q4_K_M--sm_120a.json) | — | — | — | — |
-| `qwen3-tts-1.7b-base-Q8_0` | qualified | 2026-10-26T18:54:09+09:00 | sm_120a | [qwen3-tts-1.7b-base-Q8_0--sm_120a.json](qualified-records/qwen3-tts-1.7b-base-Q8_0--sm_120a.json) | — | — | — | — |
+| `qwen3-tts-0.6b-customvoice-Q4_K_M` | qualified | 2026-10-26T22:31:57+09:00 | sm_120a | [qwen3-tts-0.6b-customvoice-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-0.6b-customvoice-Q4_K_M--sm_120a.json) | 0.489 | 0.186 | 1787633664 | 2466.000 |
+| `qwen3-tts-0.6b-customvoice-Q8_0` | qualified | 2026-10-26T22:32:04+09:00 | sm_120a | [qwen3-tts-0.6b-customvoice-Q8_0--sm_120a.json](qualified-records/qwen3-tts-0.6b-customvoice-Q8_0--sm_120a.json) | — | — | — | — |
+| `qwen3-tts-0.6b-base-Q4_K_M` | qualified | 2026-10-26T22:32:21+09:00 | sm_120a | [qwen3-tts-0.6b-base-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-0.6b-base-Q4_K_M--sm_120a.json) | 0.689 | 0.056 | 1936371712 | 3032.000 |
+| `qwen3-tts-0.6b-base-Q8_0` | qualified | 2026-10-26T22:32:27+09:00 | sm_120a | [qwen3-tts-0.6b-base-Q8_0--sm_120a.json](qualified-records/qwen3-tts-0.6b-base-Q8_0--sm_120a.json) | — | — | — | — |
+| `qwen3-tts-1.7b-customvoice-Q4_K_M` | qualified | 2026-10-26T22:32:09+09:00 | sm_120a | [qwen3-tts-1.7b-customvoice-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-1.7b-customvoice-Q4_K_M--sm_120a.json) | — | — | — | — |
+| `qwen3-tts-1.7b-customvoice-Q8_0` | qualified | 2026-10-26T22:32:15+09:00 | sm_120a | [qwen3-tts-1.7b-customvoice-Q8_0--sm_120a.json](qualified-records/qwen3-tts-1.7b-customvoice-Q8_0--sm_120a.json) | — | — | — | — |
+| `qwen3-tts-1.7b-base-Q4_K_M` | qualified | 2026-10-26T22:32:33+09:00 | sm_120a | [qwen3-tts-1.7b-base-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-1.7b-base-Q4_K_M--sm_120a.json) | — | — | — | — |
+| `qwen3-tts-1.7b-base-Q8_0` | qualified | 2026-10-26T22:32:40+09:00 | sm_120a | [qwen3-tts-1.7b-base-Q8_0--sm_120a.json](qualified-records/qwen3-tts-1.7b-base-Q8_0--sm_120a.json) | — | — | — | — |
 
 `pending` は record 未採用、`qualified` は pass record 採用、`failed` は fail record 採用を示します。
 fail record を `qualified` または `supported` と表示しません。

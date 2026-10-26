@@ -12,9 +12,9 @@
     "core_wheel": "speechflow-0.19.2-py3-none-any.whl",
     "core_wheel_sha256": "2224905a292ed399d45466f504e681f22772f11aadeda060147b38eebbe20ca0",
     "module_import_path": "lib/python3.12/site-packages/speechflow/qwen3/__init__.py",
-    "module_wheel": "speechflow_qwen3-0.6.3-py3-none-manylinux_2_38_x86_64.whl",
-    "module_wheel_sha256": "fa37066c787e3fab08007b8e1e82dca6fe40e10d0f64e40027fbe91421b197ea",
-    "release_tag": "v0.6.3",
+    "module_wheel": "speechflow_qwen3-0.6.4-py3-none-manylinux_2_28_x86_64.whl",
+    "module_wheel_sha256": "842bb419ed44bda992ab18d03a79ed1f856072ca1a9c63eff1f6807f815d41b7",
+    "release_tag": "v0.6.4",
     "repository": "sync-dev-org/speechflow-qwen3"
   },
   "environment": {
@@ -55,7 +55,7 @@
         "status": "pass"
       },
       "gpu_memory_measurement": {
-        "detail": "VRAM polling samples=44, expected>=44, errors=0",
+        "detail": "VRAM polling samples=48, expected>=48, errors=0",
         "status": "pass"
       },
       "host_boundary": {
@@ -63,7 +63,7 @@
         "status": "pass"
       },
       "isolated_import": {
-        "detail": "module import=lib/python3.12/site-packages/speechflow/qwen3/__init__.py; distribution=speechflow-qwen3 0.6.3; wheel=speechflow_qwen3-0.6.3-py3-none-manylinux_2_38_x86_64.whl; prefix=active runtime",
+        "detail": "module import=lib/python3.12/site-packages/speechflow/qwen3/__init__.py; distribution=speechflow-qwen3 0.6.4; wheel=speechflow_qwen3-0.6.4-py3-none-manylinux_2_28_x86_64.whl; prefix=active runtime",
         "status": "pass"
       },
       "manifest_load": {
@@ -97,34 +97,34 @@
     },
     "measurements": {
       "base_conditioning_seconds": null,
-      "cold_load_seconds": 1.9941730040009134,
+      "cold_load_seconds": 2.2630291010136716,
       "gpu_memory": {
         "baseline_mib": 1163.0,
         "errors": [],
-        "expected_sample_count": 44,
+        "expected_sample_count": 48,
         "peak_delta_mib": 3078.0,
         "peak_total_mib": 4241.0,
         "poll_interval_seconds": 0.1,
-        "sample_count": 44
+        "sample_count": 48
       },
-      "peak_rss_bytes": 2344624128,
+      "peak_rss_bytes": 2321276928,
       "streaming": {
         "audio_seconds": 5.12,
         "samples": 122880,
-        "ttfa_seconds": 0.061033840000163764,
-        "wall_rtf": 0.12023880096876383,
-        "wall_seconds": 0.6156226609600708
+        "ttfa_seconds": 0.05411491298582405,
+        "wall_rtf": 0.1207467013614405,
+        "wall_seconds": 0.6182231109705754
       },
       "warm_get": {
         "audio_seconds": 5.12,
         "samples": 122880,
         "trial_wall_seconds": [
-          0.5562533779884689,
-          0.546486993029248,
-          0.5063662499887869
+          0.5711005269549787,
+          0.5504261210444383,
+          0.5257883599842899
         ],
-        "wall_rtf": 0.10475954563844425,
-        "wall_seconds": 0.5363688736688346
+        "wall_rtf": 0.10724707083227258,
+        "wall_seconds": 0.5491050026612356
       }
     },
     "run_input": {
@@ -143,7 +143,7 @@
       "warm_up": "model load completed before measured synthesis"
     }
   },
-  "executed_at": "2026-10-26T18:53:39+09:00",
+  "executed_at": "2026-10-26T22:32:09+09:00",
   "failure": null,
   "model": {
     "codec": "qwen-tokenizer-12hz-Q4_K_M.gguf",

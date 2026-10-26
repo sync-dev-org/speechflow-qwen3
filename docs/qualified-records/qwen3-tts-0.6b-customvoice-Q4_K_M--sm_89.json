@@ -12,9 +12,9 @@
     "core_wheel": "speechflow-0.19.2-py3-none-any.whl",
     "core_wheel_sha256": "2224905a292ed399d45466f504e681f22772f11aadeda060147b38eebbe20ca0",
     "module_import_path": "lib/python3.12/site-packages/speechflow/qwen3/__init__.py",
-    "module_wheel": "speechflow_qwen3-0.6.3-py3-none-manylinux_2_38_x86_64.whl",
-    "module_wheel_sha256": "fa37066c787e3fab08007b8e1e82dca6fe40e10d0f64e40027fbe91421b197ea",
-    "release_tag": "v0.6.3",
+    "module_wheel": "speechflow_qwen3-0.6.4-py3-none-manylinux_2_28_x86_64.whl",
+    "module_wheel_sha256": "842bb419ed44bda992ab18d03a79ed1f856072ca1a9c63eff1f6807f815d41b7",
+    "release_tag": "v0.6.4",
     "repository": "sync-dev-org/speechflow-qwen3"
   },
   "environment": {
@@ -43,7 +43,7 @@
         "status": "pass"
       },
       "gpu_memory_measurement": {
-        "detail": "VRAM polling samples=30, expected>=30, errors=0",
+        "detail": "VRAM polling samples=29, expected>=29, errors=0",
         "status": "pass"
       },
       "host_boundary": {
@@ -51,7 +51,7 @@
         "status": "pass"
       },
       "release_identity": {
-        "detail": "repository=sync-dev-org/speechflow-qwen3; tag=v0.6.3; wheel=speechflow_qwen3-0.6.3-py3-none-manylinux_2_38_x86_64.whl",
+        "detail": "repository=sync-dev-org/speechflow-qwen3; tag=v0.6.4; wheel=speechflow_qwen3-0.6.4-py3-none-manylinux_2_28_x86_64.whl",
         "status": "pass"
       },
       "selected_gpu": {
@@ -67,21 +67,21 @@
         "status": "pass"
       },
       "wheel_digest": {
-        "detail": "module wheel SHA-256 matched SHA256SUMS: fa37066c787e3fab08007b8e1e82dca6fe40e10d0f64e40027fbe91421b197ea",
+        "detail": "module wheel SHA-256 matched SHA256SUMS: 842bb419ed44bda992ab18d03a79ed1f856072ca1a9c63eff1f6807f815d41b7",
         "status": "pass"
       }
     },
     "measurements": {
       "gpu_memory": {
-        "baseline_mib": 1844.0,
+        "baseline_mib": 1832.0,
         "errors": [],
-        "expected_sample_count": 30,
+        "expected_sample_count": 29,
         "peak_delta_mib": 2412.0,
-        "peak_total_mib": 4256.0,
+        "peak_total_mib": 4244.0,
         "poll_interval_seconds": 0.1,
-        "sample_count": 30
+        "sample_count": 29
       },
-      "peak_rss_bytes": 1581944832,
+      "peak_rss_bytes": 1573167104,
       "stream_trials": [
         {
           "audio_seconds": 4.72,
@@ -90,8 +90,8 @@
           "samples": 113280,
           "status": "pass",
           "trial": 1,
-          "ttfa_seconds": 0.04976946301758289,
-          "wall_seconds": 0.46694116899743676
+          "ttfa_seconds": 0.05331259104423225,
+          "wall_seconds": 0.46082996507175267
         },
         {
           "audio_seconds": 4.72,
@@ -100,8 +100,8 @@
           "samples": 113280,
           "status": "pass",
           "trial": 2,
-          "ttfa_seconds": 0.026653960114344954,
-          "wall_seconds": 0.3916379869915545
+          "ttfa_seconds": 0.024231830844655633,
+          "wall_seconds": 0.38933451496995986
         },
         {
           "audio_seconds": 4.72,
@@ -110,11 +110,11 @@
           "samples": 113280,
           "status": "pass",
           "trial": 3,
-          "ttfa_seconds": 0.011668575927615166,
-          "wall_seconds": 0.3696543269325048
+          "ttfa_seconds": 0.010989404981955886,
+          "wall_seconds": 0.3690556110814214
         }
       ],
-      "warmup_seconds": 1.6057178180199116
+      "warmup_seconds": 1.5169565030373633
     },
     "run_input": {
       "build_type": "Release",
@@ -129,7 +129,7 @@
       "trial_count": 3
     }
   },
-  "executed_at": "2026-10-26T19:09:26+09:00",
+  "executed_at": "2026-10-26T22:41:04+09:00",
   "failure": null,
   "model": {
     "codec": "qwen-tokenizer-12hz-Q4_K_M.gguf",
