@@ -7,8 +7,8 @@ native target の同梱と実機 runtime evidence を区別し、性能値に合
 
 | Architecture | Compute capability | Representative GPU | Native target | Runtime evidence | Record |
 |---|---:|---|---|---|---|
-| `sm_86` | 8.6 | NVIDIA RTX A6000 | included | pending | — |
-| `sm_89` | 8.9 | NVIDIA RTX 6000 Ada | included | pending | — |
+| `sm_86` | 8.6 | NVIDIA RTX A6000 | included | qualified | [qwen3-tts-0.6b-customvoice-Q4_K_M--sm_86.json](qualified-records/qwen3-tts-0.6b-customvoice-Q4_K_M--sm_86.json) |
+| `sm_89` | 8.9 | NVIDIA RTX 6000 Ada | included | qualified | [qwen3-tts-0.6b-customvoice-Q4_K_M--sm_89.json](qualified-records/qwen3-tts-0.6b-customvoice-Q4_K_M--sm_89.json) |
 | `sm_120a` | 12.0 | NVIDIA RTX PRO 4000 Blackwell | included | qualified | [qwen3-tts-0.6b-base-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-0.6b-base-Q4_K_M--sm_120a.json), [qwen3-tts-0.6b-base-Q8_0--sm_120a.json](qualified-records/qwen3-tts-0.6b-base-Q8_0--sm_120a.json), [qwen3-tts-0.6b-customvoice-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-0.6b-customvoice-Q4_K_M--sm_120a.json), [qwen3-tts-0.6b-customvoice-Q8_0--sm_120a.json](qualified-records/qwen3-tts-0.6b-customvoice-Q8_0--sm_120a.json), [qwen3-tts-1.7b-base-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-1.7b-base-Q4_K_M--sm_120a.json), [qwen3-tts-1.7b-base-Q8_0--sm_120a.json](qualified-records/qwen3-tts-1.7b-base-Q8_0--sm_120a.json), [qwen3-tts-1.7b-customvoice-Q4_K_M--sm_120a.json](qualified-records/qwen3-tts-1.7b-customvoice-Q4_K_M--sm_120a.json), [qwen3-tts-1.7b-customvoice-Q8_0--sm_120a.json](qualified-records/qwen3-tts-1.7b-customvoice-Q8_0--sm_120a.json) |
 
 ## Model-pair results

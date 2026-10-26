@@ -1093,11 +1093,14 @@ def test_documentation_rejects_pass_records_from_different_releases(tmp_path: Pa
 
 @pytest.mark.req("SP-SFQWEN3-017")
 def test_repository_documents_match_adopted_records() -> None:
-    """README links to public adopted records while the evidence document keeps relative links."""
+    """Architecture rows show adopted smoke and full-pair records; model rows show sm_120a full-pair results."""
     repository = Path(__file__).resolve().parents[1]
     record_paths = sorted((repository / "docs" / "qualified-records").glob("*.json"))
     # Adopted records describe their original wheel, so current build validation does not apply.
     expected_names = [f"{entry.model_id}--sm_120a.json" for entry in qualified_gpu.CATALOG]
+    expected_names.extend(
+        f"{qualified_gpu.ARCHITECTURE_SMOKE_MODEL_ID}--{architecture}.json" for architecture in ("sm_86", "sm_89")
+    )
     assert [path.name for path in record_paths] == sorted(expected_names)
     readme = (repository / "README.md").read_text(encoding="utf-8")
     evidence = (repository / "docs/qualified-evidence.md").read_text(encoding="utf-8")
@@ -1107,7 +1110,9 @@ def test_repository_documents_match_adopted_records() -> None:
         assert len(matches) == 1
         return [cell.strip() for cell in matches[0].split("|")[1:-1]]
 
-    states: list[str] = []
+    records_by_architecture: dict[str, list[tuple[Path, str]]] = {
+        architecture: [] for architecture in ("sm_86", "sm_89", "sm_120a")
+    }
     for path in record_paths:
         record = json.loads(path.read_text(encoding="utf-8"))
         assert record["schema_version"] == 3
@@ -1117,7 +1122,9 @@ def test_repository_documents_match_adopted_records() -> None:
         assert record["profile"] == ("full-pair" if architecture == "sm_120a" else "architecture-smoke")
         assert record["status"] in {"pass", "fail"}
         state = "qualified" if record["status"] == "pass" else "failed"
-        states.append(state)
+        records_by_architecture[architecture].append((path, state))
+        if architecture != "sm_120a":
+            continue
         assert row(readme, model_id)[4:] == [
             state,
             f"[{path.name}]({PUBLIC_DOCUMENTS_URL}/qualified-records/{path.name})",
@@ -1138,14 +1145,15 @@ def test_repository_documents_match_adopted_records() -> None:
             f"[{path.name}](qualified-records/{path.name})",
             *performance,
         ]
-    architecture_state = "failed" if "failed" in states else "qualified"
     for document, prefix in ((readme, f"{PUBLIC_DOCUMENTS_URL}/"), (evidence, "")):
-        assert row(document, "sm_120a")[4] == architecture_state
-        assert row(document, "sm_120a")[5] == ", ".join(
-            f"[{path.name}]({prefix}qualified-records/{path.name})" for path in record_paths
-        )
-        for architecture in ("sm_86", "sm_89"):
-            assert row(document, architecture)[4:] == ["pending", "—"]
+        for architecture, architecture_records in records_by_architecture.items():
+            architecture_state = (
+                "failed" if any(state == "failed" for _, state in architecture_records) else "qualified"
+            )
+            assert row(document, architecture)[4:] == [
+                architecture_state,
+                ", ".join(f"[{path.name}]({prefix}qualified-records/{path.name})" for path, _ in architecture_records),
+            ]
 
 
 @pytest.mark.req("SP-SFQWEN3-024")
