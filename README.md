@@ -14,7 +14,7 @@ pip install speechflow-qwen3
 
 CPU ISA の下限は x86-64-v3 (AVX2 / FMA / F16C) です。producer 固有の CPU 命令へ最適化せず、AVX-512 は有効にしません。
 
-NVIDIA driver は host が提供し、CUDA 13.2 以上に対応する必要があります。CUDA 13.2 以上の user-space library (`libcudart.so.13`、`libcublas.so.13`、`libcublasLt.so.13`) は Python dependency が提供します。CUDA 13.2 GA に対応する package の下限は `nvidia-cuda-runtime` が 13.2、`nvidia-cublas` が 13.3 で、どちらも 14 未満です。runtime host に system CUDA toolkit、compiler、CMake、Ninja、外部 build directory は必要ありません。
+NVIDIA driver は host が提供し、CUDA 13.2 以上に対応する必要があります。CUDA 13.2 の runtime は wheel の `libqwen.so` に静的に link します。cuBLAS の共有 library (`libcublas.so.13`、`libcublasLt.so.13`) は Python dependency `nvidia-cublas>=13.3,<14` が提供します。runtime host に system CUDA toolkit、compiler、CMake、Ninja、外部 build directory は必要ありません。
 
 wheel は、compute capability 8.6、compute capability 8.9、compute capability 12.0 の real cubin を同じ wheel に含めます。
 
