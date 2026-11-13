@@ -93,7 +93,7 @@ async def synthesize_reference(reference_audio: AudioData) -> None:
 asyncio.run(synthesize_reference(reference_audio))
 ```
 
-`language` は共通の言語コードで指定します。Qwen3-TTS が扱う言語では、受理する code は `zh`、`en`、`de`、`it`、`pt`、`es`、`ja`、`ko`、`fr`、`ru` です。`language=None` は言語を指定せず、model が text から自動判定します。受理しない値は合成前に `ConfigurationError` になります。言語名、大文字、地域付き、3 文字の表記から対応する受理可能な code が一つに決まる場合、error message にその code を示します。
+`language` は共通の言語コードで指定します。Qwen3-TTS が扱う言語では、受理する code は `zh`、`en`、`de`、`it`、`pt`、`es`、`ja`、`ko`、`fr`、`ru` です。`language=None` は言語を指定せず、model が text から自動判定します。受理しない値は合成前に `ConfigurationError` になります。言語名、大文字、地域付き、3 文字の表記から対応する受理可能な code が一つに決まる場合、error message にその code を示します。合成する文の言語が決まっている時は、`language` でその言語を明示すると、自動判定よりイントネーションが自然になります。CustomVoice の各 speaker は、その speaker の母語で合成した時に質が最も高くなります (日本語は `ono_anna`。[Qwen3-TTS の model card](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice))。
 
 CustomVoice と Clone の両方で、`get()` と `stream()` に `do_sample`、`temperature`、`top_k`、`top_p`、`repetition_penalty` を keyword argument として渡せます。これらは呼び出しごとの talker sampling に効きます。`do_sample` は bool、`temperature` と `repetition_penalty` は正の有限数、`top_k` は 0 から 2,147,483,647 までの整数、`top_p` は 0 より大きく 1 以下の有限数を受け付けます。`do_sample=False` は greedy、`top_k=0` と `top_p=1` はそれぞれの制限を使わない指定です。用意した engine に渡した不正な値は、native の合成を始める前に `ConfigurationError` になります。
 
@@ -119,6 +119,10 @@ engine の仕事をする操作は非同期です。同期の code から一連�
 | `qwen3-tts-1.7b-customvoice-Q8_0` | CustomVoice | `qwen-talker-1.7b-customvoice-Q8_0.gguf` | `qwen-tokenizer-12hz-Q8_0.gguf` | qualified | [qwen3-tts-1.7b-customvoice-Q8_0--sm_120a.json](https://github.com/sync-dev-org/speechflow-qwen3/blob/main/docs/qualified-records/qwen3-tts-1.7b-customvoice-Q8_0--sm_120a.json) |
 | `qwen3-tts-1.7b-base-Q4_K_M` | Base | `qwen-talker-1.7b-base-Q4_K_M.gguf` | `qwen-tokenizer-12hz-Q4_K_M.gguf` | qualified | [qwen3-tts-1.7b-base-Q4_K_M--sm_120a.json](https://github.com/sync-dev-org/speechflow-qwen3/blob/main/docs/qualified-records/qwen3-tts-1.7b-base-Q4_K_M--sm_120a.json) |
 | `qwen3-tts-1.7b-base-Q8_0` | Base | `qwen-talker-1.7b-base-Q8_0.gguf` | `qwen-tokenizer-12hz-Q8_0.gguf` | qualified | [qwen3-tts-1.7b-base-Q8_0--sm_120a.json](https://github.com/sync-dev-org/speechflow-qwen3/blob/main/docs/qualified-records/qwen3-tts-1.7b-base-Q8_0--sm_120a.json) |
+
+## source からの build
+
+開発者は、NVIDIA driver、CMake 3.31 以上、Ninja、GCC/G++ と、組織の private な recipe を読める `gh` の認証を用意します。CUDA 13.2 の build 用の部品は、Conan の consumer と lock が固定した `cuda-toolkit` から取得します。host の CUDA Toolkit は不要です。標準 wheel は開発用 repository の root の `uv build --wheel` で build します。依存の準備と native test は同 repository の `docs/development.md`、公開用の container の build は `docs/release.md` に従います。
 
 ## 配布とライセンス
 
